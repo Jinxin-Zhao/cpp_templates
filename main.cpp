@@ -37,10 +37,6 @@ template <typename T,
                 void foo3(){
                 }
 
-int VCCC;
-
-
-
 int main(){
     auto size_tuple = CTuple<short,int,long,double>::length;
     std::cout << "size of CTuple is " << size_tuple << std::endl;
