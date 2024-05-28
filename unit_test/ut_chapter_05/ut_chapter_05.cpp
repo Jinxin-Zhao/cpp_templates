@@ -2,6 +2,47 @@
 #include "../gtest/include/gtest/gtest.h"
 #include "../../chapter/chapter_05.h"
 
+// x array definition
+int x[] = {3,5,6};
+
+template <typename T1, typename T2, typename T3>
+void testNakedArrayTemplate(int a1[7], int a2[], int (&a3)[42], int (x0)[], T1 x1, T2 & x2, T3 && x3) {
+    CNakedArrayTemplateClass<decltype(a1)>::print(); // uses CNakedArrayTemplateClass<T*>
+    CNakedArrayTemplateClass<decltype(a2)>::print(); // uses CNakedArrayTemplateClass<T*> a1, a2 退化成指针
+    CNakedArrayTemplateClass<decltype(a3)>::print(); // uses CNakedArrayTemplateClass<T(&)[SZ]>
+    CNakedArrayTemplateClass<decltype(x0)>::print(); // uses CNakedArrayTemplateClass<T(&)[]>
+    CNakedArrayTemplateClass<decltype(x1)>::print(); // uses CNakedArrayTemplateClass<T*>
+    CNakedArrayTemplateClass<decltype(x2)>::print(); // uses CNakedArrayTemplateClass<T(&)[]>
+    CNakedArrayTemplateClass<decltype(x3)>::print(); // uses CNakedArrayTemplateClass<T(&)[]> // 万能引用， 引用折叠
+}
+
+TEST(TestChapterFive, array_template) {
+    int a[42];
+    CNakedArrayTemplateClass<decltype(a)>::print(); // uses CNakedArrayTemplateClass<T[SZ]>
+    extern int x[]; // forward declare array
+    CNakedArrayTemplateClass<decltype(x)>::print(); // uses CNakedArrayTemplateClass<T[]>
+    testNakedArrayTemplate(a, a, a, x, x, x, x);
+}
+
+TEST(TestChapterFive, member_template) {
+    std::cout << std::boolalpha;
+    BoolString s("hello");
+    std::cout << s.get() << std::endl;
+    std::cout << s.get<bool>() << std::endl;
+    BoolString s_2("on");
+    std::cout << s_2.get<bool>() << std::endl;
+}
+
+TEST(TestChapterFive, template_keywords) {
+    std::bitset<4> bs{"0011"};
+    printBitset(bs);
+}
+
+TEST(TestChapterFive, generic_lambda) {
+    auto res = lambda_func(4.5, 9.8);
+    std::cout << "result of lambda function " << res << std::endl;
+}
+
 TEST(TestChapterFive, template_param) {
     std::cout << "unit test chapter 05"<< std::endl;
     auto t_max = myMax<char>;
