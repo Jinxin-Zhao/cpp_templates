@@ -51,6 +51,27 @@ std::size_t f_len(T...) {
     return 0;
 }
 
+
+// “我们SFINAE掉了一个函数”意思是我们通过模板在一些限制条件下产生无效代码，从而确保在这些条件下忽略掉该模板
+// 如下面这个例子
+class selfThread {
+public:
+    //确保在使用一个selfThread对象构造另一个selfThread时，下面的构造函数被SFINAE掉了，从而调用默认的copy构造函数
+    template <typename F, typename... Args, typename=std::enable_if_t<!std::is_same_v<std::decay_t<F>, selfThread>>>
+    explicit selfThread(F && f, Args&& ... args) {
+    }
+};
+
 // 编译期if，利用SFINAE和std::enable_if来禁用或启用某个模板
+template <typename T, typename... Types>
+void print(const T & firstArg, Types const &... args) {
+    std::cout << firstArg << '\n';
+    // since c++17
+    if constexpr(sizeof...(args) > 0) {
+        // code only available if sizeof...(args)>0
+        print(args...);
+    } 
+}
+
 
 #endif
