@@ -63,7 +63,37 @@ decltype(auto) call_inv(Callable && op, Args&&... args) {
     }
 }
 
+// 11.2.1 类型萃取
+#include <type_traits>
+template <typename T>
+class CTypeTraits {
+    // ensure that T is not void
+    static_assert(!std::is_same_v<std::remove_cv_t<T>, void>, "invalid instantiation of class CTypeTraits for void type");
+public:
+    template <typename V>
+    void f(V &&v) {
+        if constexpr(std::is_reference_v<T>) {
+            // if T is a reference type
+        }
+        if constexpr(std::is_convertible_v<std::decay_t<V>, T>) {
+            // if T is convertible to T
+            add_rvalue_reference_t<int const> value = 1;
+        }
+        if constexpr(std::has_virtual_destructor_v<V>) {
+            // if V has virtual destructor
+        }
+    }
+};
 
+// std::remove_const_t<int const&> : 结果是int const&,因为引用不是const
+// 所以删除引用和删除const顺序很重要
+// std::remove_const_t<std::remove_reference_t<int const &>> :   int
+// std::remove_reference_t<std::remove_const_t<int const &>> :   int const
+// 或者直接使用std::decay<int const &> : int
+
+// add reference
+//add_rvalue_reference_t<int const> : int const &&
+//add_rvalue_reference_t<int const &>: // due to && collapse, => int const &
 
 
 #endif
