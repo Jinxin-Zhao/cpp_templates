@@ -54,13 +54,13 @@ decltype(auto) call_inv(Callable && op, Args&&... args) {
     // return ret;
 
     // 如果返回值是void，就不能像上述写法这么写，因为void是不完全类型，不能将ret初始化为decltype(auto)。
-    if constexpr(std::is_same_v<std::invoke_result_t<Callable, Args>, void>) {
-        std::invoke(std::forward<Callable>(op), std::forward<Args>(args)...);
-        return;
-    } else {
+    // if constexpr(std::is_same_v<std::invoke_result_t<Callable, Args>, void>) {
+    //     //std::invoke(std::forward<Callable>(op), std::forward<Args>(args)...);
+    //     return;
+    // } else {
         decltype(auto) ret{std::invoke(std::forward<Callable>(op), std::forward<Args>(args)...)};
         return ret;
-    }
+    // }
 }
 
 // 11.2.1 类型萃取
@@ -76,8 +76,8 @@ public:
             // if T is a reference type
         }
         if constexpr(std::is_convertible_v<std::decay_t<V>, T>) {
-            // if T is convertible to T
-            add_rvalue_reference_t<int const> value = 1;
+            // if T is convertible to T: int const && value = 1;
+            std::add_rvalue_reference_t<int const> value = 1;
         }
         if constexpr(std::has_virtual_destructor_v<V>) {
             // if V has virtual destructor
@@ -95,5 +95,29 @@ public:
 //add_rvalue_reference_t<int const> : int const &&
 //add_rvalue_reference_t<int const &>: // due to && collapse, => int const &
 
+// copy asignable
+// is_copy_assignable_v<int> // yields true (you can assgin an int to an int), 通常只会检查左值相关操作
+// equal to is_assignable_v<int&, int&>
+
+// 11.2.2 std::addressoff()
+template <typename T>
+void addr_f(T && x) {
+    auto p = &x;
+    auto q = std::addressof(x); // 返回一个对象或函数的准确地址
+}
+
+
+// 11.2.3
+// std::declval可以被用作某一类型对象的的引用的占位符
+template <typename T1, typename T2, typename RT = std::decay_t<decltype(true ? std::declval<T1>() : std::declval<T2>())>>
+RT r_max(T1 a, T2 b) {
+    return b < a ? a : b;
+}
+
+//
+template <typename T>
+void tmplParamIsReference(T) {
+    std::cout << "T is reference: " << std::is_reference_v<T> << std::endl;
+}
 
 #endif

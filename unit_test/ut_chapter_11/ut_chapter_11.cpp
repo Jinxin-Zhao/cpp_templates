@@ -15,6 +15,15 @@ TEST(TestChapterEight, test_template_lib) {
    foreach(primes.begin(), primes.end(), &MyClass::memfunc, obj);
 }
 
+TEST(TestChapterEight, test_template_is_reference) {
+    int i;
+    int & r = i;
+    tmplParamIsReference(i); // false
+    tmplParamIsReference(r); // false
+    tmplParamIsReference<int&>(i); // true
+    tmplParamIsReference<int&>(r); // true
+}
+
 int main (int argc, char** argv) {
     testing::InitGoogleTest(&argc,argv);
     return RUN_ALL_TESTS();
