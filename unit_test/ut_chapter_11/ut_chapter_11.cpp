@@ -11,6 +11,11 @@ TEST(TestChapterEight, test_template_lib) {
         std::cout << "lambda as callable" << std::endl;
    });
    //
+   foreach(primes.begin(), primes.end(), [](std::string const & prefix, int i) {
+        std::cout << prefix << i;
+   }, " value: "); // "- value" is 1st arg of lambda
+   std::cout << std::endl;
+   //
    MyClass obj;
    foreach(primes.begin(), primes.end(), &MyClass::memfunc, obj);
 }

@@ -120,4 +120,27 @@ void tmplParamIsReference(T) {
     std::cout << "T is reference: " << std::is_reference_v<T> << std::endl;
 }
 
+// 11.5 defer evaluation
+template <typename T>
+class Cont {
+public:
+
+    // error: std::is_move_constructible要求参数必须是完整类型，如果用Node调用就像 Cont<Node> next语句，此时Node还没定义完，属不完整类型
+    // typename std::conditional<std::is_move_constructible<T>::value, T&&, T&>::type foo() {
+    // }
+
+    // 类型萃取依赖于模板参数D(默认值是T),并且编译器会一直等到foo被以完整类型(如Node)为参数调用时，
+    // 才会对类型萃取部分进行计算(此时Node是一个完整类型,其只在定义时才是非完整类型)
+    template <typename D = T>
+    typename std::conditional<std::is_move_constructible<D>::value, T&&, T&>::type foo() {
+    }
+private:
+    T * elem;
+};
+
+struct Node {
+    std::string value;
+    Cont<Node> next;
+};
+
 #endif
