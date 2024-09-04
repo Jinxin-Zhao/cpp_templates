@@ -31,6 +31,7 @@ struct AccumulationTraits<unsigned int> {
     static AccT const zero = 0;
 };
 
+// constexpr好一点，可以对float和其他字面值类型进行类内初始化
 template<>
 struct AccumulationTraits<float> {
     using AccT = float;
@@ -64,5 +65,7 @@ auto accum(T * begin, T * end) {
     return total;
 }
 
+// traits policies
 
 #endif
+
