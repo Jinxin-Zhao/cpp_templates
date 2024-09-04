@@ -35,12 +35,14 @@ using EnableIfSizeGreater4 = std::enable_if_t<(sizeof(T) > 4)>;
 template <typename T,
         typename = EnableIfSizeGreater4<T>>
                 void foo3(){
+                        std::cout << "sizeof(T) > 4" << std::endl;
                 }
 
 int main(){
     auto size_tuple = CTuple<short,int,long,double>::length;
     std::cout << "size of CTuple is " << size_tuple << std::endl;
 
+    // 
     Point<Color,Label> p;
     Point<Color,Label> p_p({0x7F,0,0x7F},{"center"});
 

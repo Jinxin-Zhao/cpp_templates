@@ -71,6 +71,8 @@ public:
 class X : public EqualityComparable<X>
 {
 public:
+    // friend function declared in class (public or private is the same) which is not class member function
+    // but can visit private member in class
     friend bool operator==(X const& x1,X const& x2)
     {
         //比较并返回结果
