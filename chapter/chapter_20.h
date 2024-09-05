@@ -154,4 +154,84 @@ public:
     }
 };
 
+
+// facades design pattern
+template <typename Derived, typename Value, typename Category, 
+typename Reference = Value&, typename Distance = std::ptrdiff_t>
+class IteratorFacade {
+public:
+    using value_type = typename std::remove_const<Value>::type;
+    using reference = Reference;
+    using pointer = Value*;
+    using difference_type = Distance;
+    using iterator_category = Category;
+
+    reference operator*() const {
+        return asDerived().dereference();
+    }
+    pointer operator->() const {}
+    Derived & operator++() {
+        asDerived().increment();
+        return asDerived();
+    }
+    Derived operator++ (int) {
+        Derived result(asDerived());
+        asDerived().increment();
+        return result;
+    }
+
+    Derived & operator-- (){}
+    Derived operator--(int) {}
+    reference operatorp[] (difference_type n) const {}
+    Derived & operator += (difference_type n) {}
+
+    friend bool operator== (IteratorFacade const &lhs, IteratorFacade const & rhs){
+        return lhs.asDerived().equals(rhs.asDerived());
+    }
+    friend difference_type operator-(const IteratorFacade & lhs, const IteratorFacade & rhs) {}
+    friend bool operator<(IteratorFacade const & lhs, IteratorFacade const & rhs){}
+
+private:
+    //
+    Derived & asDerived() {
+        return *static_cast<Derived*>(this);
+    }
+    Derived const & asDerived() const {
+        return *static_cast<Derived const *>(this);
+    }
+    
+};
+
+// 定义一个链表的迭代器
+template <typename T>
+class ListNode {
+public:
+    T value;
+    ListNode<T> * next{nullptr};
+    ~ListNode() {delete next;}
+};
+
+template <typename T>
+class ListNodeIterator : public IteratorFacade<ListNodeIterator<T>, T, std::forward_iterator_tag>{
+public:
+    T & dereference() const {
+        return current->value;
+    }
+
+    void increment() {
+        current = current->next;
+    }
+    bool equals(ListNodeIterator const & other) const {
+        return current == other.current;
+    }
+
+    ListNodeIterator(ListNode<T> * current = nullptr) : current(current) {
+        
+    }
+
+private:
+    ListNode<T> * current = nullptr;
+
+};
+
 #endif
