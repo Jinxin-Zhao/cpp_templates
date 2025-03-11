@@ -38,6 +38,7 @@ struct AccumulationTraits<unsigned int> {
     static constexpr AccT zero() { return 0; }
 };
 
+// constexpr好一点，可以对float和其他字面值类型进行类内初始化
 template<>
 struct AccumulationTraits<float> {
     using AccT = float;
@@ -189,4 +190,8 @@ void printElemType (T const & c) {
     std::cout << "Container of " << typeid(typename ElementT<T>::Type).name() << " elements. \n";
 }
 
+// traits policies
+
 #endif
+
+
