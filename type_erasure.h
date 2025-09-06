@@ -106,6 +106,7 @@ private:
     struct ShapeConcept {
         virtual ~ShapeConcept() = default;
         virtual void Draw(const Context & ctx) const = 0;
+        virtual std::unique_ptr<ShapeConcept> Clone() const = 0;
     };
 
     template <typename T>
@@ -114,8 +115,22 @@ private:
         void Draw(const Context & ctx) const override {
             DrawSingleShape(ctx, m_shape);
         }
+
+        std::unique_ptr<ShapeConcept> Clone() const override {
+            return std::make_unique<ShapeModel<T>>(*this);
+        }
         T m_shape;
     };
+
+    DShape(const DShape & other) : m_shape(other.m_shape->Clone()) {}
+
+    DShape & operator=(const DShape & other) {
+        if (this != &other) {
+            DShape temp(other);
+            std::swap(m_shape, temp.m_shape);
+        }
+        return *this;
+    }
 
     std::unique_ptr<ShapeConcept> m_shape;
 
@@ -127,5 +142,21 @@ public:
         m_shape->Draw(ctx);
     }
 };
+
+// test case
+void DrawShapes(const std::vector<DShape> & shapes) {
+    Context ctx;
+    for (const auto & shape : shapes) {
+        shape.Draw(ctx);
+    }
+}
+
+// int main() {
+//     std::vector<DShape> shapes;
+//     shapes.emplace_back(Circle(10));
+//     shapes.emplace_back(Rectangle(20, 30));
+//     DrawShapes(shapes);
+//     return 0;
+// }
 
 #endif // TYPE_REASURE_H
